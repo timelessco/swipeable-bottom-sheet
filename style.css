@@ -1,5 +1,6 @@
 body {
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 header {
@@ -72,9 +73,11 @@ header {
   right: 0px;
 
   overflow-x: hidden;
-  overflow-y: auto;
-  scroll-snap-type: y proximity;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+
   will-change: transform;
+  scroll-snap-type: y proximity;
 }
 
 .bottom-sheet .margin {

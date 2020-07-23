@@ -32,7 +32,6 @@ class SwipeableBottomSheet {
 
       bottomSheetNode.remove();
     }
-
     // Eventlistener function binds
     this.openBottomSheet = this.openBottomSheet.bind(this);
     this.enableInteractivity = this.enableInteractivity.bind(this);
@@ -46,28 +45,6 @@ class SwipeableBottomSheet {
 
   onScroll() {
     /**
-     * If bottomsheet scrollTop reached its client height, enable the body scroll.
-     */
-    if (this.bottomSheetScrolled && this.clonedbottomSheet.scrollTop < this.newBottomSheetContent.offsetHeight) {
-      // Set bottomSheet scrolled to false
-      this.bottomSheetScrolled = false;
-
-      // Disable the body scroll when bottom sheet opens.
-      enableBodyScroll(this.swipeableBottomSheet);
-    }
-
-    /**
-     * If bottomsheet scrollTop reached its client height, disable the body scroll.
-     */
-    if (!this.bottomSheetScrolled && this.clonedbottomSheet.scrollTop >= this.newBottomSheetContent.offsetHeight) {
-      // Set bottomSheet scrolled to true
-      this.bottomSheetScrolled = true;
-
-      // Disable the body scroll when bottom sheet opens.
-      disableBodyScroll(this.swipeableBottomSheet);
-    }
-
-    /**
      * If bottomsheet is not dismissed and scrolled below half of peek element
      */
     if (!this.bottomSheetDismissed && this.clonedbottomSheet.scrollTop < this.bottomSheetPeek.offsetTop * 0.5) {
@@ -78,6 +55,8 @@ class SwipeableBottomSheet {
         if (e.srcElement.classList.contains("fade-out")) {
           // Remove Scroll listener on the bottomsheet
           this.clonedbottomSheet.removeEventListener("scroll", this.onScroll);
+          bodyScrollLock.enableBodyScroll(this.clonedbottomSheet);
+
           document.body.removeChild(this.swipeableBottomSheet);
         }
       };
@@ -144,9 +123,10 @@ class SwipeableBottomSheet {
 
     this.bottomSheetContent = document.createElement("div");
     this.bottomSheetContent.classList.add("content");
+    this.bottomSheetContent.setAttribute("body-scroll-lock-ignore", true);
 
-    this.newBottomSheetContent = wrapAll(this.clonedbottomSheet, this.bottomSheetContent);
-    this.clonedbottomSheet.appendChild(this.newBottomSheetContent);
+    const newBottomSheetContent = wrapAll(this.clonedbottomSheet, this.bottomSheetContent);
+    this.clonedbottomSheet.appendChild(newBottomSheetContent);
 
     this.bottomSheetPeek = document.createElement("div");
     this.bottomSheetPeek.classList.add("peek");
@@ -165,6 +145,10 @@ class SwipeableBottomSheet {
     this.overlay.classList.add("fade-in");
     this.clonedbottomSheet.classList.add("slide-in");
 
+    /* =========================================================================*/
+    bodyScrollLock.disableBodyScroll(this.clonedbottomSheet);
+    /* =========================================================================*/
+
     this.overlay.onanimationend = () => {
       this.overlay.classList.remove("fade-in");
     };
@@ -172,7 +156,6 @@ class SwipeableBottomSheet {
       this.clonedbottomSheet.classList.remove("slide-in");
     };
 
-    console.dir(this.swipeableBottomSheet);
     this.clonedbottomSheet.scrollTop = this.bottomSheetPeek.offsetTop;
 
     // https://stackoverflow.com/a/61931093/10858781
@@ -181,6 +164,8 @@ class SwipeableBottomSheet {
       () => {
         this.swipeableBottomSheet.onanimationend = (e) => {
           if (e.srcElement.classList.contains("fade-out")) {
+            bodyScrollLock.enableBodyScroll(this.clonedbottomSheet);
+
             document.body.removeChild(this.swipeableBottomSheet);
           }
         };
