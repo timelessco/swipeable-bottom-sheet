@@ -58,11 +58,10 @@ header {
   height: 100%;
   background: none;
   scroll-snap-align: start;
-  transition: background 0.2s;
 }
 
 .bottom-sheet .peek {
-  top: 0;
+  top: 35vh;
   position: absolute;
   width: 1px;
   height: 1px;
@@ -115,20 +114,12 @@ header {
   display: none;
 }
 
-.hidden {
-  opacity: 0;
-}
-
 .bottom-sheet-enter {
   animation: slide-up 0.2s ease 0s;
 }
 
 .bottom-sheet-leave {
   animation: slide-up 0.2s ease 0s reverse;
-}
-
-.bottom-sheet .margin.overlay {
-  background: rgba(0, 0, 0, 0.5);
 }
 
 @keyframes slide-up {
@@ -140,4 +131,8 @@ header {
     transform: translateY(0vh);
     opacity: 1;
   }
+}
+
+.hidden {
+  display: none;
 }
