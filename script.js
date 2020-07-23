@@ -2,7 +2,7 @@ const triggers = Array.from(document.querySelectorAll(".triggers .trigger"));
 const bottomSheet = document.querySelector(".bottom-sheet");
 
 window.addEventListener("DOMContentLoaded", function () {
-  // cssScrollSnapPolyfill();
+  cssScrollSnapPolyfill();
   triggers.forEach((trigger) => {
     new SwipeableBottomSheet({ trigger, bottomSheet });
   });
