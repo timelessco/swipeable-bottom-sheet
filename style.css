@@ -46,12 +46,17 @@ header {
   overflow-x: hidden;
   overflow-y: hidden;
   scroll-snap-type: y proximity;
+  transition: background 0.2s;
 }
 
 .bottom-sheet.interactive {
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
   pointer-events: auto;
+}
+
+.bottom-sheet.overlay {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .bottom-sheet .margin {
