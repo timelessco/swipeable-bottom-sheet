@@ -35,32 +35,50 @@ header {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/**
+ * Bottom Sheet specific styles.
+ */
+
+.disable-scrollbars {
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE and Edge */
+  -ms-overflow-style: none;
+}
+
+/* Chrome and Safari */
+.disable-scrollbars::-webkit-scrollbar {
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.4);
+  left: 0px;
+  top: 68px;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1300;
+}
+
 .bottom-sheet {
   position: fixed;
+  z-index: 1400;
+
   top: 68px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  pointer-events: none;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   scroll-snap-type: y proximity;
-  transition: background 0.2s;
-}
-
-.bottom-sheet.interactive {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: scroll;
-  pointer-events: auto;
-}
-
-.bottom-sheet.overlay {
-  background: rgba(0, 0, 0, 0.5);
+  will-change: transform;
 }
 
 .bottom-sheet .margin {
-  height: 100%;
+  min-height: 100%;
   background: none;
   scroll-snap-align: start;
 }
@@ -79,16 +97,20 @@ header {
   scroll-snap-align: start;
 }
 
-.bottom-sheet .container {
+.bottom-sheet.interactive {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+}
+
+.content {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   background: #fff;
   box-shadow: 0 24px 0 0 #fff, 0 0 12px 0 rgba(0, 0, 0, 0.3), 0 0 24px 12px rgba(0, 0, 0, 0.1);
   scroll-snap-align: start;
 }
 
-.container header::before {
+.content header::before {
   content: " ";
   display: block;
   position: absolute;
@@ -102,42 +124,38 @@ header {
   opacity: 0.1;
 }
 
-/**
- * Bottom Sheet specific styles.
- */
-
-.disable-scrollbars {
-  /* Firefox */
-  scrollbar-width: none;
-
-  /* IE and Edge */
-  -ms-overflow-style: none;
+.fade-in {
+  animation: fade 0.2s forwards;
 }
 
-/* Chrome and Safari */
-.disable-scrollbars::-webkit-scrollbar {
-  display: none;
+.fade-out {
+  animation: fade 0.1s reverse;
 }
 
-.bottom-sheet-enter {
-  animation: slide-up 0.2s ease 0s;
-}
-
-.bottom-sheet-leave {
-  animation: slide-up 0.2s ease 0s reverse;
-}
-
-@keyframes slide-up {
+/* Animate opacity */
+@keyframes fade {
   from {
-    transform: translateY(100vh);
     opacity: 0;
   }
   to {
-    transform: translateY(0vh);
     opacity: 1;
   }
 }
 
-.hidden {
-  display: none;
+.slide-in {
+  animation: slide 0.2s forwards;
+}
+
+.slide-out {
+  animation: slide 0.1s reverse;
+}
+
+/* Animate Transform */
+@keyframes slide {
+  from {
+    transform: translateY(100vh);
+  }
+  to {
+    transform: translateY(0%);
+  }
 }
