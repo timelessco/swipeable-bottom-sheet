@@ -39,21 +39,10 @@ class SwipeableBottomSheet {
     this.enableInteractivity = this.enableInteractivity.bind(this);
     this.disableInteractivity = this.disableInteractivity.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    this.toggleInteractivity = this.toggleInteractivity.bind(this);
 
     // Add listeners to open the bottomsheet on all the trigger.
     this.trigger.addEventListener("click", this.openBottomSheet, passiveIsSupported ? { passive: true } : false);
-
-    // Add listeners to disable bottomsheet interacitivity
-    this.bottomSheetMargin.addEventListener(
-      "touchstart",
-      this.disableInteractivity,
-      passiveIsSupported ? { passive: true } : false
-    );
-    // Add listeners to enable bottomsheet interacitivity
-    document.addEventListener("touchend", this.enableInteractivity, passiveIsSupported ? { passive: true } : false);
-
-    // Add Scroll listener on the bottomsheet
-    this.bottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
   }
 
   onScroll() {
@@ -85,6 +74,9 @@ class SwipeableBottomSheet {
     if (!this.bottomSheetDismissed && this.bottomSheet.scrollTop < this.bottomSheetPeek.offsetTop * 0.5) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
+      // Remove Scroll listener on the bottomsheet
+      this.bottomSheet.removeEventListener("scroll", this.onScroll);
+
       // Add bottomsheet leave animation class
       this.bottomSheet.classList.add("bottom-sheet-leave");
 
@@ -104,11 +96,9 @@ class SwipeableBottomSheet {
 
   enableInteractivity() {
     if (!this.isInteractive) {
-      setTimeout(() => {
-        this.isInteractive = true;
-        // Add interactivity to the bottomsheet
-        this.bottomSheet.classList.add("interactive");
-      }, 10);
+      this.isInteractive = true;
+      // Add interactivity to the bottomsheet
+      this.bottomSheet.classList.add("interactive");
     }
   }
 
@@ -120,6 +110,17 @@ class SwipeableBottomSheet {
     }
   }
 
+  toggleInteractivity(event) {
+    const { y } = getCurrentCursorPosition(event);
+
+    // If the mouse is on the bottomsheet enable the interactivity else disable it
+    if (y > this.bottomSheet.clientHeight + this.bottomSheet.offsetTop - this.bottomSheet.scrollTop) {
+      this.enableInteractivity();
+    } else {
+      this.disableInteractivity();
+    }
+  }
+
   /**
    * Click to open bottomsheet with transition
    */
@@ -128,11 +129,6 @@ class SwipeableBottomSheet {
     this.bottomSheetDismissed = false;
     // Set bottomsheet scrolled status to false
     this.bottomSheetScrolled = false;
-
-    // Set bottomsheet interactive status to false
-    this.isInteractive = true;
-    // Add interactivity to the bottomsheet
-    this.bottomSheet.classList.add("interactive");
 
     // Show the bottomsheet
     this.bottomSheet.classList.remove("hidden");
@@ -150,5 +146,17 @@ class SwipeableBottomSheet {
     this.bottomSheet.addEventListener("animationend", onAnimationEnd, {
       once: true,
     });
+
+    // Add Scroll listener on the bottomsheet
+    this.bottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
+
+    const isTouchSupported = getIsTouchSupported();
+
+    if (isTouchSupported) {
+      // Add Toggle Interactivity to the bottom sheet based on the mouse position
+      document.addEventListener("touchstart", this.toggleInteractivity, passiveIsSupported ? { passive: true } : false);
+    } else {
+      document.addEventListener("mousemove", this.toggleInteractivity, passiveIsSupported ? { passive: true } : false);
+    }
   }
 }
