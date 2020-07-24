@@ -24,7 +24,6 @@ class SwipeableBottomSheet {
 
     // Handle trigger id error
     if (triggerNode == null) {
-      console.error("Please provide a valid trigger id");
       return;
     }
 
@@ -45,7 +44,6 @@ class SwipeableBottomSheet {
 
       // Handle bottom sheet id error
       if (this.bottomSheet == null) {
-        console.error("Please provide a valid bottom sheet id");
         return;
       }
     }
@@ -66,19 +64,31 @@ class SwipeableBottomSheet {
    * Click to open bottomsheet with transition
    */
   openBottomSheet() {
+    this.openedBottomSheet = document.getElementById("swipeable-bottom-sheet-no-overlay");
+
+    if (this.openedBottomSheet) {
+      // Set dismissed to true
+      this.bottomSheetDismissed = true;
+      this.closeBottomSheet(this.openedBottomSheet);
+    }
+
     // Set bottomsheet dismissed status to false
     this.bottomSheetDismissed = false;
     // Add ID to each bottom sheet
-    this.id = `swipeable-bottom-sheet-${++ID_COUNTER}`;
+    this.id = ++ID_COUNTER;
 
     // Create a new component container every time
     this.swipeableBottomSheet = document.createElement("div");
-    this.swipeableBottomSheet.setAttribute("id", this.id);
+    this.swipeableBottomSheet.dataset.bottomSheetId = this.id;
 
     // Get the cloned bottom sheet content
     this.clonedbottomSheet = this.bottomSheet.cloneNode(true);
     this.clonedbottomSheet.classList.add("bottom-sheet");
     this.clonedbottomSheet.classList.add("disable-scrollbars");
+
+    if (!this.options.overlay) {
+      this.swipeableBottomSheet.setAttribute("id", `swipeable-bottom-sheet-no-overlay`);
+    }
 
     // Add Scroll listener on the bottomsheet
     this.clonedbottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
@@ -93,7 +103,7 @@ class SwipeableBottomSheet {
     // Append the peek
     this.bottomSheetPeek = document.createElement("div");
     this.bottomSheetPeek.classList.add("peek");
-    document.documentElement.style.setProperty("--bottom-sheet-peek", this.options.peek);
+    this.bottomSheetPeek.style.top = this.options.peek;
     this.clonedbottomSheet.insertBefore(this.bottomSheetPeek, this.clonedbottomSheet.firstChild);
 
     // Append the margin
@@ -120,7 +130,6 @@ class SwipeableBottomSheet {
     // Handle Threshold exceptions
     if (this.options.closeThreshold) {
       if (this.options.closeThreshold > this.bottomSheetPeek.offsetTop) {
-        console.error("Close Threshold should be less than peek position");
       } else {
         this.closeThreshold = this.options.closeThreshold;
       }
@@ -137,8 +146,10 @@ class SwipeableBottomSheet {
       this.overlay.addEventListener("animationend", overlayAnimatoinEnd, { once: true });
       this.overlay.classList.add("fade-in");
 
+      const handleMarginClick = () => this.closeBottomSheet(this.swipeableBottomSheet);
+
       // Click margin area to close the bottom sheet
-      this.bottomSheetMargin.addEventListener("click", this.closeBottomSheet, { once: true });
+      this.bottomSheetMargin.addEventListener("click", handleMarginClick, { once: true });
     }
 
     // Slide animation on bottom sheet
@@ -156,26 +167,28 @@ class SwipeableBottomSheet {
     if (!this.bottomSheetDismissed && this.clonedbottomSheet.scrollTop < this.closeThreshold) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
-      this.closeBottomSheet();
+      this.closeBottomSheet(this.swipeableBottomSheet);
     }
   }
 
   /**
    * Close bottom sheet with animation.
    */
-  closeBottomSheet() {
-    // Wait for animation end to destroy the bottom sheet and enable the body scroll
+  closeBottomSheet(bottomSheetToClose) {
+    const bottomSheet = bottomSheetToClose.querySelector(".bottom-sheet");
+
     const onAnimationEnd = (e) => {
       if (e.srcElement.classList.contains("fade-out")) {
-        bodyScrollLock.enableBodyScroll(this.clonedbottomSheet);
+        bodyScrollLock.enableBodyScroll(bottomSheet);
 
-        document.body.removeChild(this.swipeableBottomSheet);
+        document.body.removeChild(bottomSheetToClose);
       }
     };
-    this.swipeableBottomSheet.addEventListener("animationend", onAnimationEnd, { once: true });
+
+    bottomSheetToClose.addEventListener("animationend", onAnimationEnd, { once: true });
 
     // Close Aniamation
-    this.swipeableBottomSheet.classList.add("fade-out");
-    this.clonedbottomSheet.classList.add("slide-out");
+    bottomSheetToClose.classList.add("fade-out");
+    bottomSheet.classList.add("slide-out");
   }
 }

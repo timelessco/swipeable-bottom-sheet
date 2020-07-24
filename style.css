@@ -39,9 +39,6 @@ header {
 /**
  * Bottom Sheet specific styles.
  */
-:root {
-  --bottom-sheet-peek: 35vh;
-}
 
 .disable-scrollbars {
   /* Firefox */
@@ -54,6 +51,10 @@ header {
 /* Chrome and Safari */
 .disable-scrollbars::-webkit-scrollbar {
   display: none;
+}
+
+#swipeable-bottom-sheet-no-overlay {
+  pointer-events: none;
 }
 
 .overlay {
@@ -99,7 +100,7 @@ header {
   white-space: nowrap;
   border-width: 0;
 
-  top: var(--bottom-sheet-peek);
+  top: 0;
   scroll-snap-align: start;
 }
 
