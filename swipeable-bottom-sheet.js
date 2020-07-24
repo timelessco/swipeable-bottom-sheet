@@ -1,10 +1,10 @@
+let bottomSheets = [];
+let ID_COUNTER = 0;
+
 const defaultOptions = {
   overlay: true,
   peek: "35vh",
 };
-
-let bottomSheets = [];
-let ID_COUNTER = 0;
 
 /**
  * Swipeable Bottom Sheet.

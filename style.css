@@ -39,6 +39,9 @@ header {
 /**
  * Bottom Sheet specific styles.
  */
+:root {
+  --bottom-sheet-peek: 35vh;
+}
 
 .disable-scrollbars {
   /* Firefox */
@@ -54,44 +57,38 @@ header {
 }
 
 .overlay {
-  position: fixed;
-  background: rgba(0, 0, 0, 0.4);
-  left: 0px;
-  top: 68px;
   width: 100vw;
   height: 100vh;
+  position: fixed;
+  left: 0px;
+  top: 68px;
   z-index: 1300;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .bottom-sheet {
   position: fixed;
-  z-index: 1400;
-
   top: 68px;
   bottom: 0px;
   left: 0px;
   right: 0px;
+  z-index: 1400;
+  will-change: transform;
 
   overflow-x: hidden;
   overflow-y: scroll;
   overscroll-behavior-y: contain;
-
-  will-change: transform;
   scroll-snap-type: y proximity;
 }
 
 .bottom-sheet .margin {
   height: 100%;
   background: none;
+
   scroll-snap-align: start;
 }
 
-:root {
-  --bottom-sheet-peek: 35vh;
-}
-
 .bottom-sheet .peek {
-  top: var(--bottom-sheet-peek);
   position: absolute;
   width: 1px;
   height: 1px;
@@ -101,6 +98,8 @@ header {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+
+  top: var(--bottom-sheet-peek);
   scroll-snap-align: start;
 }
 
@@ -134,6 +133,14 @@ header {
   animation: fade 0.1s reverse;
 }
 
+.slide-in {
+  animation: slide 0.2s forwards;
+}
+
+.slide-out {
+  animation: slide 0.1s reverse;
+}
+
 /* Animate opacity */
 @keyframes fade {
   from {
@@ -142,14 +149,6 @@ header {
   to {
     opacity: 1;
   }
-}
-
-.slide-in {
-  animation: slide 0.2s forwards;
-}
-
-.slide-out {
-  animation: slide 0.1s reverse;
 }
 
 /* Animate Transform */
