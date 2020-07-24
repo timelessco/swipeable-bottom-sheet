@@ -12,4 +12,5 @@ window.addEventListener("DOMContentLoaded", function () {
   new SwipeableBottomSheet({ triggerId: "trigger-6", bottomSheetId: "swipeable-bottom-sheet" });
   new SwipeableBottomSheet({ triggerId: "trigger-7", bottomSheetId: "swipeable-bottom-sheet" });
   new SwipeableBottomSheet({ triggerId: "trigger-8", bottomSheetId: "swipeable-bottom-sheet" });
+  new SwipeableBottomSheet({ triggerId: "trigger-9", bottomSheetId: "swipeable-bottom-sheet" });
 });
