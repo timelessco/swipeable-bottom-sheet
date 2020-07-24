@@ -68,27 +68,8 @@ class SwipeableBottomSheet {
    * Click to open bottomsheet with transition
    */
   openBottomSheet() {
-    const getOverlay = () => {
-      if (this.options.overlay) {
-        this.overlay = document.createElement("div");
-        this.overlay.classList.add("overlay");
-      }
-    };
-
-    const getPeek = () => {
-      this.bottomSheetPeek = document.createElement("div");
-      this.bottomSheetPeek.classList.add("peek");
-      this.bottomSheetPeek.style.top = this.options.peek;
-    };
-
-    const getMargin = () => {
-      this.bottomSheetMargin = document.createElement("div");
-      this.bottomSheetMargin.classList.add("margin");
-    };
-
     const getbottomSheetContent = () => {
-      this.bottomSheetContent = document.createElement("div");
-      this.bottomSheetContent.classList.add("content");
+      this.bottomSheetContent = createElement("content");
       this.bottomSheetContent.setAttribute("body-scroll-lock-ignore", true);
     };
 
@@ -101,18 +82,14 @@ class SwipeableBottomSheet {
       this.clonedBottomSheet.appendChild(this.newBottomSheetContent);
 
       // Add interactivity based on the type of bottom-sheet
-      if (this.options.overlay) {
-        this.clonedBottomSheet.classList.add("interactive");
-      }
+      if (this.options.overlay) this.clonedBottomSheet.classList.add("interactive");
     };
 
     const getSwipeableBottomSheet = () => {
       this.swipeableBottomSheet = document.createElement("div");
       this.swipeableBottomSheet.appendChild(this.clonedBottomSheet);
 
-      if (this.options.overlay) {
-        this.swipeableBottomSheet.appendChild(this.overlay);
-      }
+      if (this.options.overlay) this.swipeableBottomSheet.appendChild(this.overlay);
     };
 
     // Fade In animation on Overlay
@@ -120,9 +97,11 @@ class SwipeableBottomSheet {
       const overlayAnimatoinEnd = () => {
         this.overlay.classList.remove("fade-in");
       };
+
       this.overlay.addEventListener("animationend", overlayAnimatoinEnd, {
         once: true,
       });
+
       this.overlay.classList.add("fade-in");
     };
 
@@ -131,9 +110,11 @@ class SwipeableBottomSheet {
       const bottomSheetAnimatoinEnd = () => {
         this.clonedBottomSheet.classList.remove("slide-in");
       };
+
       this.clonedBottomSheet.addEventListener("animationend", bottomSheetAnimatoinEnd, {
         once: true,
       });
+
       this.clonedBottomSheet.classList.add("slide-in");
     };
 
@@ -158,10 +139,12 @@ class SwipeableBottomSheet {
       // Set bottomsheet dismissed status to false
       this.bottomSheetDismissed = false;
 
-      getOverlay();
+      if (this.options.overlay) this.overlay = createElement("overlay");
+      this.bottomSheetPeek = createElement("peek");
+      this.bottomSheetMargin = createElement("margin");
+      this.bottomSheetPeek.style.top = this.options.peek;
+
       getbottomSheetContent();
-      getPeek();
-      getMargin();
       getClonedBottomSheet();
 
       // Improvise cloned bottom sheet content
@@ -197,11 +180,8 @@ class SwipeableBottomSheet {
       this.closeThreshold = this.bottomSheetPeek.offsetTop * 0.5;
 
       // Handle Threshold exceptions
-      if (this.options.closeThreshold) {
-        if (this.options.closeThreshold > this.bottomSheetPeek.offsetTop) {
-        } else {
-          this.closeThreshold = this.options.closeThreshold;
-        }
+      if (this.options.closeThreshold && this.options.closeThreshold < this.bottomSheetPeek.offsetTop) {
+        this.closeThreshold = this.options.closeThreshold;
       }
 
       // Store all the opened instances
@@ -210,6 +190,8 @@ class SwipeableBottomSheet {
       /**
        * Open Animation.
        */
+      slideInBottomSheetAnimation();
+
       if (this.options.overlay) {
         // Disable the body scroll
         bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
@@ -221,11 +203,10 @@ class SwipeableBottomSheet {
         // Click margin area to close the bottom sheet
         this.bottomSheetMargin.addEventListener("click", handleMarginClick, { once: true });
       }
-      slideInBottomSheetAnimation();
     } else {
       this.options.overlay = true;
 
-      getOverlay();
+      if (this.options.overlay) this.overlay = createElement("overlay");
       getbottomSheetContent();
       getClonedBottomSheet();
 
@@ -233,19 +214,19 @@ class SwipeableBottomSheet {
       getSwipeableBottomSheet();
       document.body.appendChild(this.swipeableBottomSheet);
 
+      fadeInOverlayAnimation();
+
       // Disable body scroll
       bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
 
-      // Click margin area to close the bottom sheet
-      this.clonedBottomSheet.addEventListener("click", (event) => {
+      const handleMarginClick = () => {
         if (!this.newBottomSheetContent.contains(event.target)) {
-          // Disable the body scroll
-          bodyScrollLock.enableBodyScroll(this.clonedBottomSheet);
-          document.body.removeChild(this.swipeableBottomSheet);
+          this.closeBottomSheet(this.swipeableBottomSheet, false);
         }
-      });
+      };
 
-      fadeInOverlayAnimation();
+      // Click margin area to close the bottom sheet
+      this.clonedBottomSheet.addEventListener("click", handleMarginClick, { once: true });
     }
   }
 
@@ -263,7 +244,7 @@ class SwipeableBottomSheet {
   /**
    * Close bottom sheet with animation.
    */
-  closeBottomSheet(bottomSheetToClose) {
+  closeBottomSheet(bottomSheetToClose, slide = true) {
     const bottomSheet = bottomSheetToClose.querySelector(".bottom-sheet");
 
     const onAnimationEnd = (e) => {
@@ -281,7 +262,10 @@ class SwipeableBottomSheet {
 
     // Close Aniamation
     bottomSheetToClose.classList.add("fade-out");
-    bottomSheet.classList.add("slide-out");
+
+    if (slide) {
+      bottomSheet.classList.add("slide-out");
+    }
   }
 
   enableInteractivity() {

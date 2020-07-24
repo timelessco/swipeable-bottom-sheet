@@ -73,3 +73,10 @@ function wrapAll(target, wrapper = document.createElement("div")) {
 
   return wrapper;
 }
+
+function createElement(classname) {
+  const element = document.createElement("div");
+  element.classList.add(classname);
+
+  return element;
+}
