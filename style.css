@@ -86,8 +86,12 @@ header {
   scroll-snap-align: start;
 }
 
+:root {
+  --bottom-sheet-peek: 35vh;
+}
+
 .bottom-sheet .peek {
-  top: 35vh;
+  top: var(--bottom-sheet-peek);
   position: absolute;
   width: 1px;
   height: 1px;
