@@ -64,12 +64,18 @@ class SwipeableBottomSheet {
    * Click to open bottomsheet with transition
    */
   openBottomSheet() {
-    this.openedBottomSheet = document.getElementById("swipeable-bottom-sheet-no-overlay");
+    const openedBottomSheet = document.getElementById(this.options.bottomSheetId);
 
-    if (this.openedBottomSheet) {
+    if (openedBottomSheet) {
+      return;
+    }
+
+    this.overlayBottomSheet = document.getElementById("swipeable-bottom-sheet-no-overlay");
+
+    if (this.overlayBottomSheet) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
-      this.closeBottomSheet(this.openedBottomSheet);
+      this.closeBottomSheet(this.overlayBottomSheet);
     }
 
     // Set bottomsheet dismissed status to false
