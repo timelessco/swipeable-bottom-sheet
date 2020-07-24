@@ -1,4 +1,5 @@
 let bottomSheets = [];
+let openedInstances = [];
 let ID_COUNTER = 0;
 
 const defaultOptions = {
@@ -55,6 +56,9 @@ class SwipeableBottomSheet {
     this.openBottomSheet = this.openBottomSheet.bind(this);
     this.onScroll = this.onScroll.bind(this);
     this.closeBottomSheet = this.closeBottomSheet.bind(this);
+    this.enableInteractivity = this.enableInteractivity.bind(this);
+    this.disableInteractivity = this.disableInteractivity.bind(this);
+    this.toggleInteractivity = this.toggleInteractivity.bind(this);
 
     // Add listeners to open the bottomsheet on all the trigger.
     this.trigger.addEventListener("click", this.openBottomSheet, passiveIsSupported ? { passive: true } : false);
@@ -70,12 +74,15 @@ class SwipeableBottomSheet {
       return;
     }
 
-    this.overlayBottomSheet = document.getElementById("swipeable-bottom-sheet-no-overlay");
-
-    if (this.overlayBottomSheet) {
+    if (openedInstances.length > 0) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
-      this.closeBottomSheet(this.overlayBottomSheet);
+
+      // Close all openedInstance with their listeners
+      openedInstances.forEach((instance) => {
+        document.removeEventListener("touchstart", instance.toggleInteractivity);
+        this.closeBottomSheet(instance.swipeableBottomSheet);
+      });
     }
 
     // Set bottomsheet dismissed status to false
@@ -88,34 +95,39 @@ class SwipeableBottomSheet {
     this.swipeableBottomSheet.dataset.bottomSheetId = this.id;
 
     // Get the cloned bottom sheet content
-    this.clonedbottomSheet = this.bottomSheet.cloneNode(true);
-    this.clonedbottomSheet.classList.add("bottom-sheet");
-    this.clonedbottomSheet.classList.add("disable-scrollbars");
+    this.clonedBottomSheet = this.bottomSheet.cloneNode(true);
+    this.clonedBottomSheet.classList.add("bottom-sheet");
+    this.clonedBottomSheet.classList.add("disable-scrollbars");
 
     if (!this.options.overlay) {
       this.swipeableBottomSheet.setAttribute("id", `swipeable-bottom-sheet-no-overlay`);
     }
 
     // Add Scroll listener on the bottomsheet
-    this.clonedbottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
+    this.clonedBottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
 
     // Append the content
     this.bottomSheetContent = document.createElement("div");
     this.bottomSheetContent.classList.add("content");
     this.bottomSheetContent.setAttribute("body-scroll-lock-ignore", true);
-    const newBottomSheetContent = wrapAll(this.clonedbottomSheet, this.bottomSheetContent);
-    this.clonedbottomSheet.appendChild(newBottomSheetContent);
+    const newBottomSheetContent = wrapAll(this.clonedBottomSheet, this.bottomSheetContent);
+    this.clonedBottomSheet.appendChild(newBottomSheetContent);
+
+    // Add interactivity based on the type of bottom-sheet
+    if (this.options.overlay) {
+      this.clonedBottomSheet.classList.add("interactive");
+    }
 
     // Append the peek
     this.bottomSheetPeek = document.createElement("div");
     this.bottomSheetPeek.classList.add("peek");
     this.bottomSheetPeek.style.top = this.options.peek;
-    this.clonedbottomSheet.insertBefore(this.bottomSheetPeek, this.clonedbottomSheet.firstChild);
+    this.clonedBottomSheet.insertBefore(this.bottomSheetPeek, this.clonedBottomSheet.firstChild);
 
     // Append the margin
     this.bottomSheetMargin = document.createElement("div");
     this.bottomSheetMargin.classList.add("margin");
-    this.clonedbottomSheet.insertBefore(this.bottomSheetMargin, this.clonedbottomSheet.firstChild);
+    this.clonedBottomSheet.insertBefore(this.bottomSheetMargin, this.clonedBottomSheet.firstChild);
 
     // Append Overlay
     if (this.options.overlay) {
@@ -125,12 +137,25 @@ class SwipeableBottomSheet {
     }
 
     // Append the bottom sheet to the DOM
-    this.swipeableBottomSheet.appendChild(this.clonedbottomSheet);
+    this.swipeableBottomSheet.appendChild(this.clonedBottomSheet);
     document.body.appendChild(this.swipeableBottomSheet);
-    // Disable the body scroll
-    bodyScrollLock.disableBodyScroll(this.clonedbottomSheet);
+
+    // Store all the opened instances
+    openedInstances = [...openedInstances, this];
+
+    // Add listeners to enable and disable interactivity based on the touch position
+    if (!this.options.overlay) {
+      // Add Toggle Interactivity to the bottom sheet based on the mouse position
+      document.addEventListener("touchstart", this.toggleInteractivity, passiveIsSupported ? { passive: true } : false);
+    }
+
+    if (this.options.overlay) {
+      // Disable the body scroll
+      bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
+    }
+
     // Scroll the bottom sheet till the peek position
-    this.clonedbottomSheet.scrollTop = this.bottomSheetPeek.offsetTop;
+    this.clonedBottomSheet.scrollTop = this.bottomSheetPeek.offsetTop;
     this.closeThreshold = this.bottomSheetPeek.offsetTop * 0.5;
 
     // Handle Threshold exceptions
@@ -160,17 +185,17 @@ class SwipeableBottomSheet {
 
     // Slide animation on bottom sheet
     const bottomSheetAnimatoinEnd = () => {
-      this.clonedbottomSheet.classList.remove("slide-in");
+      this.clonedBottomSheet.classList.remove("slide-in");
     };
-    this.clonedbottomSheet.addEventListener("animationend", bottomSheetAnimatoinEnd, { once: true });
-    this.clonedbottomSheet.classList.add("slide-in");
+    this.clonedBottomSheet.addEventListener("animationend", bottomSheetAnimatoinEnd, { once: true });
+    this.clonedBottomSheet.classList.add("slide-in");
   }
 
   onScroll() {
     /**
      * If bottomsheet is not dismissed and scrolled below half of peek element
      */
-    if (!this.bottomSheetDismissed && this.clonedbottomSheet.scrollTop < this.closeThreshold) {
+    if (!this.bottomSheetDismissed && this.clonedBottomSheet.scrollTop < this.closeThreshold) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
       this.closeBottomSheet(this.swipeableBottomSheet);
@@ -185,7 +210,10 @@ class SwipeableBottomSheet {
 
     const onAnimationEnd = (e) => {
       if (e.srcElement.classList.contains("fade-out")) {
+        // Enable  body scroll lock
         bodyScrollLock.enableBodyScroll(bottomSheet);
+        // Remove the instance that are going to be closed
+        openedInstances = openedInstances.filter((instance) => bottomSheetToClose !== instance.swipeableBottomSheet);
 
         document.body.removeChild(bottomSheetToClose);
       }
@@ -196,5 +224,34 @@ class SwipeableBottomSheet {
     // Close Aniamation
     bottomSheetToClose.classList.add("fade-out");
     bottomSheet.classList.add("slide-out");
+  }
+
+  enableInteractivity() {
+    if (!this.isInteractive) {
+      this.isInteractive = true;
+      // Add interactivity to the bottomsheet
+      this.clonedBottomSheet.classList.add("interactive");
+      bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
+    }
+  }
+
+  disableInteractivity() {
+    if (this.isInteractive) {
+      this.isInteractive = false;
+      // Remove interactivity from the bottomsheet
+      this.clonedBottomSheet.classList.remove("interactive");
+      bodyScrollLock.enableBodyScroll(this.clonedBottomSheet);
+    }
+  }
+
+  toggleInteractivity(e) {
+    console.log("Runngin");
+    const { y } = getCurrentCursorPosition(e);
+    // If the mouse is on the bottomsheet enable the interactivity else disable it
+    if (y > this.clonedBottomSheet.clientHeight + this.clonedBottomSheet.offsetTop - this.clonedBottomSheet.scrollTop) {
+      this.enableInteractivity();
+    } else {
+      this.disableInteractivity();
+    }
   }
 }

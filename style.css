@@ -54,7 +54,6 @@ header {
 }
 
 #swipeable-bottom-sheet-no-overlay {
-  pointer-events: none;
 }
 
 .overlay {
@@ -76,10 +75,16 @@ header {
   z-index: 1400;
   will-change: transform;
 
+  pointer-events: none;
   overflow-x: hidden;
-  overflow-y: scroll;
   overscroll-behavior-y: contain;
   scroll-snap-type: y proximity;
+}
+
+.bottom-sheet.interactive {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  pointer-events: auto;
 }
 
 .bottom-sheet .margin {
