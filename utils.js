@@ -74,6 +74,9 @@ function wrapAll(target, wrapper = document.createElement("div")) {
   return wrapper;
 }
 
+/**
+ * Create an element with its class.
+ */
 function createElement(classname) {
   const element = document.createElement("div");
   element.classList.add(classname);
