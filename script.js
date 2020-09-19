@@ -1,5 +1,10 @@
 window.addEventListener("DOMContentLoaded", function () {
-  new SwipeableBottomSheet({ triggerId: "trigger-1", bottomSheetId: "swipeable-bottom-sheet-1" });
+  const handleOnOpen = () => {
+    const box = document.querySelectorAll(".box");
+    console.log("%c box", "color: #e57373", box);
+  };
+
+  new SwipeableBottomSheet({ triggerId: "trigger-1", bottomSheetId: "swipeable-bottom-sheet-1", onOpen: handleOnOpen });
   new SwipeableBottomSheet({ triggerId: "trigger-2", bottomSheetId: "swipeable-bottom-sheet-2" });
   new SwipeableBottomSheet({ triggerId: "trigger-3", bottomSheetId: "swipeable-bottom-sheet-1", overlay: false });
   new SwipeableBottomSheet({ triggerId: "trigger-10", bottomSheetId: "swipeable-bottom-sheet-2", overlay: false });

@@ -163,6 +163,10 @@ class SwipeableBottomSheet {
       // Append the bottom sheet to the DOM
       document.body.appendChild(this.swipeableBottomSheet);
 
+      if (this.options.onOpen) {
+        this.options.onOpen();
+      }
+
       if (!this.options.overlay) {
         // Add ID to differentiate from two types of bottom sheet
         this.swipeableBottomSheet.setAttribute("id", `swipeable-bottom-sheet-no-overlay`);
