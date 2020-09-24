@@ -17,7 +17,7 @@ class SwipeableBottomSheet {
       ...defaultOptions,
       ...options,
     };
-
+    this.isInteractive = false;
     // Get the bottomsheet and trigger
     const bottomSheetNode = document.getElementById(this.options.bottomSheetId);
 
@@ -325,21 +325,17 @@ class SwipeableBottomSheet {
   }
 
   enableInteractivity() {
-    if (!this.isInteractive) {
-      this.isInteractive = true;
-      // Add interactivity to the bottomsheet
-      this.clonedBottomSheet.classList.add("interactive");
-      bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
-    }
+    this.isInteractive = true;
+    // Add interactivity to the bottomsheet
+    this.clonedBottomSheet.classList.add("interactive");
+    bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
   }
 
   disableInteractivity() {
-    if (this.isInteractive) {
-      this.isInteractive = false;
-      // Remove interactivity from the bottomsheet
-      this.clonedBottomSheet.classList.remove("interactive");
-      bodyScrollLock.enableBodyScroll(this.clonedBottomSheet);
-    }
+    this.isInteractive = false;
+    // Remove interactivity from the bottomsheet
+    this.clonedBottomSheet.classList.remove("interactive");
+    bodyScrollLock.enableBodyScroll(this.clonedBottomSheet);
   }
 
   toggleInteractivity(e) {
