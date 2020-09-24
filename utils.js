@@ -29,7 +29,12 @@ function passiveIsSupported() {
 function getCurrentCursorPosition(e) {
   let x, y;
 
-  if (e.type == "touchstart" || e.type == "touchmove" || e.type == "touchend" || e.type == "touchcancel") {
+  if (
+    e.type == "touchstart" ||
+    e.type == "touchmove" ||
+    e.type == "touchend" ||
+    e.type == "touchcancel"
+  ) {
     var evt = typeof e.originalEvent === "undefined" ? e : e.originalEvent;
     var touch = evt.touches[0] || evt.changedTouches[0];
     x = touch.pageX;
@@ -62,4 +67,61 @@ function getIsTouchSupported() {
     navigator.maxTouchPoints > 0 ||
     window.navigator.msMaxTouchPoints > 0
   );
+}
+
+const FOCUSABLE_ELEMENTS_QUERY = [
+  "a[href]",
+  "area[href]",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "button:not([disabled])",
+  "details",
+  "summary",
+  "iframe",
+  "object",
+  "embed",
+  "[contenteditable]",
+].join(",");
+
+function focusOnFirstElement(elm) {
+  const focusable = elm.querySelectorAll(FOCUSABLE_ELEMENTS_QUERY);
+  const firstFocusable = focusable[0];
+  window.setTimeout(() => firstFocusable.focus());
+}
+
+function trapFocus(elm, event) {
+  let focusableNodes = elm.querySelectorAll(FOCUSABLE_ELEMENTS_QUERY);
+
+  // no focusable nodes
+  if (focusableNodes.length === 0) return;
+
+  /**
+   * Filters nodes which are hidden to prevent
+   * focus leak outside modal
+   */
+  focusableNodes = [...focusableNodes].filter((node) => {
+    return node.offsetParent !== null;
+  });
+
+  // if disableFocus is true
+  if (!elm.contains(document.activeElement)) {
+    focusableNodes[0].focus();
+  } else {
+    const focusedItemIndex = focusableNodes.indexOf(document.activeElement);
+
+    if (event.shiftKey && focusedItemIndex === 0) {
+      focusableNodes[focusableNodes.length - 1].focus();
+      event.preventDefault();
+    }
+
+    if (
+      !event.shiftKey &&
+      focusableNodes.length > 0 &&
+      focusedItemIndex === focusableNodes.length - 1
+    ) {
+      focusableNodes[0].focus();
+      event.preventDefault();
+    }
+  }
 }

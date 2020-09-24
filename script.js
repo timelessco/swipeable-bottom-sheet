@@ -40,14 +40,21 @@ class SwipeableBottomSheet {
     this.toggleInteractivity = this.toggleInteractivity.bind(this);
 
     // Add listeners to open the bottomsheet on all the trigger.
-    this.trigger.addEventListener("click", this.openBottomSheet, passiveIsSupported ? { passive: true } : false);
+    this.trigger.addEventListener(
+      "click",
+      this.openBottomSheet,
+      passiveIsSupported ? { passive: true } : false
+    );
   }
 
   onScroll() {
     /**
      * If bottomsheet is not dismissed and scrolled below half of peek element
      */
-    if (!this.bottomSheetDismissed && this.clonedbottomSheet.scrollTop < this.bottomSheetPeek.offsetTop * 0.5) {
+    if (
+      !this.bottomSheetDismissed &&
+      this.clonedbottomSheet.scrollTop < this.bottomSheetPeek.offsetTop * 0.5
+    ) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
 
@@ -86,7 +93,12 @@ class SwipeableBottomSheet {
     const { y } = getCurrentCursorPosition(event);
 
     // If the mouse is on the bottomsheet enable the interactivity else disable it
-    if (y > this.bottomSheet.clientHeight + this.bottomSheet.offsetTop - this.bottomSheet.scrollTop) {
+    if (
+      y >
+      this.bottomSheet.clientHeight +
+        this.bottomSheet.offsetTop -
+        this.bottomSheet.scrollTop
+    ) {
       this.enableInteractivity();
     } else {
       this.disableInteractivity();
@@ -113,7 +125,11 @@ class SwipeableBottomSheet {
     this.clonedbottomSheet.classList.add("bottom-sheet");
     this.clonedbottomSheet.classList.add("disable-scrollbars");
     // Add Scroll listener on the bottomsheet
-    this.clonedbottomSheet.addEventListener("scroll", this.onScroll, passiveIsSupported ? { passive: true } : false);
+    this.clonedbottomSheet.addEventListener(
+      "scroll",
+      this.onScroll,
+      passiveIsSupported ? { passive: true } : false
+    );
 
     const wrapAll = (target, wrapper = document.createElement("div")) => {
       [...target.childNodes].forEach((child) => wrapper.appendChild(child));
@@ -125,18 +141,36 @@ class SwipeableBottomSheet {
     this.bottomSheetContent.classList.add("content");
     this.bottomSheetContent.setAttribute("body-scroll-lock-ignore", true);
 
-    const newBottomSheetContent = wrapAll(this.clonedbottomSheet, this.bottomSheetContent);
+    const newBottomSheetContent = wrapAll(
+      this.clonedbottomSheet,
+      this.bottomSheetContent
+    );
+
+    // Trap the focus
+    newBottomSheetContent.addEventListener("keydown", (e) => {
+      trapFocus(newBottomSheetContent, e);
+    });
+
+    // focus on the fist focusable item inside the bottomsheet content
+    focusOnFirstElement(newBottomSheetContent);
+
     this.clonedbottomSheet.appendChild(newBottomSheetContent);
 
     this.bottomSheetPeek = document.createElement("div");
     this.bottomSheetPeek.classList.add("peek");
 
-    this.clonedbottomSheet.insertBefore(this.bottomSheetPeek, this.clonedbottomSheet.firstChild);
+    this.clonedbottomSheet.insertBefore(
+      this.bottomSheetPeek,
+      this.clonedbottomSheet.firstChild
+    );
 
     this.bottomSheetMargin = document.createElement("div");
     this.bottomSheetMargin.classList.add("margin");
 
-    this.clonedbottomSheet.insertBefore(this.bottomSheetMargin, this.clonedbottomSheet.firstChild);
+    this.clonedbottomSheet.insertBefore(
+      this.bottomSheetMargin,
+      this.clonedbottomSheet.firstChild
+    );
 
     /* =========================================================================*/
     this.swipeableBottomSheet.appendChild(this.overlay);
