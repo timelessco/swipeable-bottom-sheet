@@ -63,3 +63,23 @@ function getIsTouchSupported() {
     window.navigator.msMaxTouchPoints > 0
   );
 }
+
+/**
+ * Wrap the target element with a div deeply.
+ */
+function wrapAll(target, wrapper = document.createElement("div")) {
+  [...target.childNodes].forEach((child) => wrapper.appendChild(child));
+  target.appendChild(wrapper);
+
+  return wrapper;
+}
+
+/**
+ * Create an element with its class.
+ */
+function createElement(classname) {
+  const element = document.createElement("div");
+  element.classList.add(classname);
+
+  return element;
+}
