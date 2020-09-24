@@ -122,7 +122,8 @@ header {
   display: flex;
   flex-direction: column;
   background: #fff;
-  box-shadow: 0 24px 0 0 #fff, 0 0 12px 0 rgba(0, 0, 0, 0.3), 0 0 24px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 0 0 #fff, 0 0 12px 0 rgba(0, 0, 0, 0.3),
+    0 0 24px 12px rgba(0, 0, 0, 0.1);
   scroll-snap-align: start;
 }
 
@@ -139,7 +140,8 @@ header {
     margin-bottom: 3.75rem;
     outline: 0px;
     background-color: rgb(255, 255, 255);
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 7px 14px 0px, rgba(0, 0, 0, 0.07) 0px 3px 6px 0px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 7px 14px 0px,
+      rgba(0, 0, 0, 0.07) 0px 3px 6px 0px;
   }
 }
 
