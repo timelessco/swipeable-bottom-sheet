@@ -86,6 +86,14 @@ class SwipeableBottomSheet {
       );
       this.clonedBottomSheet.appendChild(this.newBottomSheetContent);
 
+      // Trap the focus
+      this.newBottomSheetContent.addEventListener("keydown", (e) => {
+        trapFocus(this.newBottomSheetContent, e);
+      });
+
+      // focus on the fist focusable item inside the bottomsheet content
+      focusOnFirstElement(this.newBottomSheetContent);
+
       // Add interactivity based on the type of bottom-sheet
       if (this.options.overlay)
         this.clonedBottomSheet.classList.add("interactive");
@@ -333,7 +341,6 @@ class SwipeableBottomSheet {
   toggleInteractivity(e) {
     const { y } = getCurrentCursorPosition(e);
     // If the mouse is on the bottomsheet enable the interactivity else disable it
-
     if (
       y >
       this.clonedBottomSheet.clientHeight +
