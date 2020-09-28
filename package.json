@@ -1,0 +1,55 @@
+{
+  "name": "swipeable-bottom-sheet",
+  "version": "0.0.0",
+  "description": "Smooth Swipeable Bottom Sheet",
+  "keywords": [
+    "bottom-sheet"
+  ],
+  "homepage": "https://github.com/timelessco/swipeable-bottom-sheet#readme",
+  "bugs": {
+    "url": "https://github.com/timelessco/swipeable-bottom-sheet/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timelessco/swipeable-bottom-sheet.git"
+  },
+  "license": "MIT",
+  "author": "Timeless <hello@timeless.co>",
+  "scripts": {
+    "build": "npm run clean:dist && npm run build:parcel",
+    "build:parcel": "parcel build src/*.html --public-url ./",
+    "clean": "npm run clean:dist && npm run clean:cache",
+    "clean:cache": "rm -rf .cache/*",
+    "clean:dist": "rm -rf dist/*",
+    "commit": "gacp",
+    "format": "prettier --write \"./**/*.{js,ts,css,less,json,md,html,yml,yaml,pcss,jsx,tsx}\"",
+    "format:package": "sort-package-json",
+    "lint": "eslint src --ext .js --fix",
+    "lint:css": "stylelint 'src/**/*.css'",
+    "start": "parcel src/index.html  --open"
+  },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "dependencies": {
+    "body-scroll-lock": "3.1.5"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "eslint": "7.9.0",
+    "eslint-config-airbnb-base": "14.2.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-prettier": "3.1.4",
+    "gacp": "2.10.0",
+    "husky": "4.3.0",
+    "lint-staged": "10.4.0",
+    "parcel-bundler": "1.12.4",
+    "prettier": "2.1.2",
+    "sort-package-json": "1.46.0",
+    "stylelint": "13.7.1",
+    "stylelint-config-prettier": "8.0.2",
+    "stylelint-config-standard": "20.0.0"
+  }
+}

@@ -1,3 +1,14 @@
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+
+import {
+  createElement,
+  focusOnFirstElement,
+  getCurrentCursorPosition,
+  passiveIsSupported,
+  trapFocus,
+  wrapAll,
+} from "./utils";
+
 let bottomSheets = [];
 let openedInstances = [];
 let ID_COUNTER = 0;
@@ -10,7 +21,7 @@ const defaultOptions = {
 /**
  * Swipeable Bottom Sheet.
  */
-class SwipeableBottomSheet {
+export class SwipeableBottomSheet {
   constructor(options) {
     // Combine default options with user options
     this.options = {
@@ -42,7 +53,7 @@ class SwipeableBottomSheet {
     } else {
       // Get the bottom sheet from the store
       this.bottomSheet = bottomSheets.find(
-        (sheet) => sheet.getAttribute("id") === this.options.bottomSheetId
+        sheet => sheet.getAttribute("id") === this.options.bottomSheetId,
       );
 
       // Handle bottom sheet id error
@@ -57,7 +68,6 @@ class SwipeableBottomSheet {
     // Eventlistener function binds
     this.openBottomSheet = this.openBottomSheet.bind(this);
     this.onScroll = this.onScroll.bind(this);
-    this.closeBottomSheet = this.closeBottomSheet.bind(this);
     this.enableInteractivity = this.enableInteractivity.bind(this);
     this.disableInteractivity = this.disableInteractivity.bind(this);
     this.toggleInteractivity = this.toggleInteractivity.bind(this);
@@ -82,12 +92,12 @@ class SwipeableBottomSheet {
       // Create the content
       this.newBottomSheetContent = wrapAll(
         this.clonedBottomSheet,
-        this.bottomSheetContent
+        this.bottomSheetContent,
       );
       this.clonedBottomSheet.appendChild(this.newBottomSheetContent);
 
       // Trap the focus
-      this.newBottomSheetContent.addEventListener("keydown", (e) => {
+      this.newBottomSheetContent.addEventListener("keydown", e => {
         trapFocus(this.newBottomSheetContent, e);
       });
 
@@ -131,17 +141,17 @@ class SwipeableBottomSheet {
         bottomSheetAnimatoinEnd,
         {
           once: true,
-        }
+        },
       );
 
       this.clonedBottomSheet.classList.add("slide-in");
     };
 
-    let mq = window.matchMedia("(min-width: 640px)");
+    const mq = window.matchMedia("(min-width: 640px)");
 
     if (mq.matches === false) {
       const openedBottomSheet = document.getElementById(
-        this.options.bottomSheetId
+        this.options.bottomSheetId,
       );
 
       if (openedBottomSheet) {
@@ -150,13 +160,14 @@ class SwipeableBottomSheet {
 
       if (openedInstances.length > 0) {
         // Close all openedInstance with their listeners
-        openedInstances.forEach((instance) => {
+        openedInstances.forEach(instance => {
+          // eslint-disable-next-line no-param-reassign
           instance.bottomSheetDismissed = true;
           document.removeEventListener(
             "touchstart",
-            instance.toggleInteractivity
+            instance.toggleInteractivity,
           );
-          this.closeBottomSheet(instance.swipeableBottomSheet);
+          closeBottomSheet(instance.swipeableBottomSheet);
         });
       }
 
@@ -175,23 +186,24 @@ class SwipeableBottomSheet {
       this.clonedBottomSheet.classList.add("disable-scrollbars");
       this.clonedBottomSheet.insertBefore(
         this.bottomSheetPeek,
-        this.clonedBottomSheet.firstChild
+        this.clonedBottomSheet.firstChild,
       );
       this.clonedBottomSheet.insertBefore(
         this.bottomSheetMargin,
-        this.clonedBottomSheet.firstChild
+        this.clonedBottomSheet.firstChild,
       );
       this.clonedBottomSheet.addEventListener(
         "scroll",
         this.onScroll,
-        passiveIsSupported ? { passive: true } : false
+        passiveIsSupported ? { passive: true } : false,
       );
 
       // Create a new component container every time
       getSwipeableBottomSheet();
 
       // Add ID to each bottom sheet
-      this.id = ++ID_COUNTER;
+      ID_COUNTER += 1;
+      this.id = ID_COUNTER;
       this.swipeableBottomSheet.dataset.bottomSheetId = this.id;
 
       // Append the bottom sheet to the DOM
@@ -205,14 +217,14 @@ class SwipeableBottomSheet {
         // Add ID to differentiate from two types of bottom sheet
         this.swipeableBottomSheet.setAttribute(
           "id",
-          `swipeable-bottom-sheet-no-overlay`
+          `swipeable-bottom-sheet-no-overlay`,
         );
 
         // Add Toggle Interactivity to the bottom sheet based on the mouse position
         document.addEventListener(
           "touchstart",
           this.toggleInteractivity,
-          passiveIsSupported ? { passive: true } : false
+          passiveIsSupported ? { passive: true } : false,
         );
       }
 
@@ -238,12 +250,12 @@ class SwipeableBottomSheet {
 
       if (this.options.overlay) {
         // Disable the body scroll
-        bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
+        disableBodyScroll(this.clonedBottomSheet);
 
         fadeInOverlayAnimation();
 
         const handleMarginClick = () =>
-          this.closeBottomSheet(this.swipeableBottomSheet);
+          closeBottomSheet(this.swipeableBottomSheet);
 
         // Click margin area to close the bottom sheet
         this.bottomSheetMargin.addEventListener("click", handleMarginClick, {
@@ -264,11 +276,11 @@ class SwipeableBottomSheet {
       fadeInOverlayAnimation();
 
       // Disable body scroll
-      bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
+      disableBodyScroll(this.clonedBottomSheet);
 
-      const handleMarginClick = () => {
+      const handleMarginClick = event => {
         if (!this.newBottomSheetContent.contains(event.target)) {
-          this.closeBottomSheet(this.swipeableBottomSheet, false);
+          closeBottomSheet(this.swipeableBottomSheet, false);
         }
       };
 
@@ -289,38 +301,7 @@ class SwipeableBottomSheet {
     ) {
       // Set dismissed to true
       this.bottomSheetDismissed = true;
-      this.closeBottomSheet(this.swipeableBottomSheet);
-    }
-  }
-
-  /**
-   * Close bottom sheet with animation.
-   */
-  closeBottomSheet(bottomSheetToClose, slide = true) {
-    const bottomSheet = bottomSheetToClose.querySelector(".bottom-sheet");
-
-    const onAnimationEnd = (e) => {
-      if (e.srcElement.classList.contains("fade-out")) {
-        // Enable  body scroll lock
-        bodyScrollLock.enableBodyScroll(bottomSheet);
-        // Remove the instance that are going to be closed
-        openedInstances = openedInstances.filter(
-          (instance) => bottomSheetToClose !== instance.swipeableBottomSheet
-        );
-
-        document.body.removeChild(bottomSheetToClose);
-      }
-    };
-
-    bottomSheetToClose.addEventListener("animationend", onAnimationEnd, {
-      once: true,
-    });
-
-    // Close Aniamation
-    bottomSheetToClose.classList.add("fade-out");
-
-    if (slide) {
-      bottomSheet.classList.add("slide-out");
+      closeBottomSheet(this.swipeableBottomSheet);
     }
   }
 
@@ -329,7 +310,7 @@ class SwipeableBottomSheet {
       this.isInteractive = true;
       // Add interactivity to the bottomsheet
       this.clonedBottomSheet.classList.add("interactive");
-      bodyScrollLock.disableBodyScroll(this.clonedBottomSheet);
+      disableBodyScroll(this.clonedBottomSheet);
     }
   }
 
@@ -338,7 +319,7 @@ class SwipeableBottomSheet {
       this.isInteractive = false;
       // Remove interactivity from the bottomsheet
       this.clonedBottomSheet.classList.remove("interactive");
-      bodyScrollLock.enableBodyScroll(this.clonedBottomSheet);
+      enableBodyScroll(this.clonedBottomSheet);
     }
   }
 
@@ -355,5 +336,36 @@ class SwipeableBottomSheet {
     } else {
       this.disableInteractivity();
     }
+  }
+}
+
+/**
+ * Close bottom sheet with animation.
+ */
+function closeBottomSheet(bottomSheetToClose, slide = true) {
+  const bottomSheet = bottomSheetToClose.querySelector(".bottom-sheet");
+
+  const onAnimationEnd = e => {
+    if (e.srcElement.classList.contains("fade-out")) {
+      // Enable  body scroll lock
+      enableBodyScroll(bottomSheet);
+      // Remove the instance that are going to be closed
+      openedInstances = openedInstances.filter(
+        instance => bottomSheetToClose !== instance.swipeableBottomSheet,
+      );
+
+      document.body.removeChild(bottomSheetToClose);
+    }
+  };
+
+  bottomSheetToClose.addEventListener("animationend", onAnimationEnd, {
+    once: true,
+  });
+
+  // Close Aniamation
+  bottomSheetToClose.classList.add("fade-out");
+
+  if (slide) {
+    bottomSheet.classList.add("slide-out");
   }
 }
