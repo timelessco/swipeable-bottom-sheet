@@ -1,8 +1,11 @@
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<div align="center">
+  <h1>Swipeable Bottom Sheet</h1>
+</div>
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+## 🧐 Features
 
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+- Native mobile swipe behaviour.
+- CSS Snap for smooth snapping.
 
 ## Contributors ✨
 
@@ -28,3 +31,15 @@ Thanks goes to these wonderful people
 This project follows the
 [all-contributors](https://github.com/all-contributors/all-contributors)
 specification. Contributions of any kind welcome!
+
+## :bug: Bug reporting
+
+[Issue](https://github.com/timelessco/swipeable-bottom-sheet/issues)
+
+## ™️ LICENSE
+
+[MIT](./LICENSE)
+
+<div align="center">
+<sub><sup>Project by <a href="https://github.com/timelessco"> @Timeless</a></sup></sub><small> ✌</small>
+</div>

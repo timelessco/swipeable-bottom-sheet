@@ -1,4 +1,4 @@
-const { SwipeableBottomSheet } = require("./swipeable-bottom-sheet");
+import { SwipeableBottomSheet } from "../swipeable-bottom-sheet";
 
 window.addEventListener("DOMContentLoaded", function () {
   const handleOnOpen = () => {

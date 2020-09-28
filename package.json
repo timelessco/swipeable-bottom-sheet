@@ -17,18 +17,18 @@
   "author": "Timeless <hello@timeless.co>",
   "scripts": {
     "build": "npm run clean:dist && npm run build:parcel",
-    "build:parcel": "parcel build src/*.html --public-url ./",
+    "build:parcel": "parcel build src/examples/index.html --public-url ./",
     "clean": "npm run clean:dist && npm run clean:cache",
     "clean:cache": "rm -rf .cache/*",
     "clean:dist": "rm -rf dist/*",
     "commit": "gacp",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate",
     "format": "prettier --write \"./**/*.{js,ts,css,less,json,md,html,yml,yaml,pcss,jsx,tsx}\"",
     "format:package": "sort-package-json",
     "lint": "eslint src --ext .js --fix",
     "lint:css": "stylelint 'src/**/*.css'",
-    "start": "parcel src/index.html  --open",
-    "contributors:add": "all-contributors add",
-    "contributors:generate": "all-contributors generate"
+    "start": "parcel src/examples/index.html --open"
   },
   "browserslist": [
     "last 1 Chrome version"
