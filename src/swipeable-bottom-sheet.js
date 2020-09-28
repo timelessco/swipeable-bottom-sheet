@@ -41,9 +41,11 @@ export class SwipeableBottomSheet {
       );
     }
 
-    // Clone, Store & Remove the bottomsheet
-    bottomSheets = [...bottomSheets, this.bottomSheet.cloneNode(true)];
-    this.bottomSheet.remove();
+    if (this.bottomSheet) {
+      // Clone, Store & Remove the bottomsheet
+      bottomSheets = [...bottomSheets, this.bottomSheet.cloneNode(true)];
+      this.bottomSheet.remove();
+    }
 
     this.trigger = $id(this.options.triggerId);
 
@@ -160,7 +162,10 @@ export class SwipeableBottomSheet {
       // Append the bottom sheet to the DOM
       document.body.appendChild(this.swipeableBottomSheet);
 
-      if (this.options.onOpen) this.options.onOpen();
+      if (this.options.onOpen)
+        this.options.onOpen(this.bottomSheetContent, slide =>
+          this.closeBottomSheet(this.swipeableBottomSheet, slide),
+        );
 
       if (!this.options.overlay) {
         // Add ID to differentiate from two types of bottom sheet
