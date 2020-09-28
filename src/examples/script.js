@@ -1,3 +1,5 @@
+import { SwipeableBottomSheet } from "../swipeable-bottom-sheet";
+
 window.addEventListener("DOMContentLoaded", function () {
   const handleOnOpen = () => {
     const box = document.querySelectorAll(".box");

@@ -3,20 +3,22 @@
  *
  * @see MDN 😍    https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Safely_detecting_option_support
  */
-function passiveIsSupported() {
+export function passiveIsSupported() {
   let isSupported = false;
 
   try {
     const options = {
       get passive() {
-        passiveSupported = true;
+        isSupported = true;
         return false;
       },
     };
 
     window.addEventListener("test", null, options);
     window.removeEventListener("test", null, options);
-  } catch (e) {}
+  } catch (e) {
+    console.warn(e);
+  }
 
   return isSupported;
 }
@@ -26,27 +28,28 @@ function passiveIsSupported() {
  *
  * @see StackOverflow 😛     https://stackoverflow.com/a/61732450/10858781
  */
-function getCurrentCursorPosition(e) {
-  let x, y;
+export function getCurrentCursorPosition(e) {
+  let x;
+  let y;
 
   if (
-    e.type == "touchstart" ||
-    e.type == "touchmove" ||
-    e.type == "touchend" ||
-    e.type == "touchcancel"
+    e.type === "touchstart" ||
+    e.type === "touchmove" ||
+    e.type === "touchend" ||
+    e.type === "touchcancel"
   ) {
-    var evt = typeof e.originalEvent === "undefined" ? e : e.originalEvent;
-    var touch = evt.touches[0] || evt.changedTouches[0];
+    const evt = typeof e.originalEvent === "undefined" ? e : e.originalEvent;
+    const touch = evt.touches[0] || evt.changedTouches[0];
     x = touch.pageX;
     y = touch.pageY;
   } else if (
-    e.type == "mousedown" ||
-    e.type == "mouseup" ||
-    e.type == "mousemove" ||
-    e.type == "mouseover" ||
-    e.type == "mouseout" ||
-    e.type == "mouseenter" ||
-    e.type == "mouseleave"
+    e.type === "mousedown" ||
+    e.type === "mouseup" ||
+    e.type === "mousemove" ||
+    e.type === "mouseover" ||
+    e.type === "mouseout" ||
+    e.type === "mouseenter" ||
+    e.type === "mouseleave"
   ) {
     x = e.clientX;
     y = e.clientY;
@@ -60,7 +63,7 @@ function getCurrentCursorPosition(e) {
  *
  * @see StackOverflow 😛    https://stackoverflow.com/a/34146257/10858781
  */
-function getIsTouchSupported() {
+export function getIsTouchSupported() {
   return (
     "ontouchstart" in window ||
     (window.DocumentTouch && document instanceof window.DocumentTouch) ||
@@ -84,13 +87,13 @@ const FOCUSABLE_ELEMENTS_QUERY = [
   "[contenteditable]",
 ].join(",");
 
-function focusOnFirstElement(elm) {
+export function focusOnFirstElement(elm) {
   const focusable = elm.querySelectorAll(FOCUSABLE_ELEMENTS_QUERY);
   const firstFocusable = focusable[0];
   window.setTimeout(() => firstFocusable.focus());
 }
 
-function trapFocus(elm, event) {
+export function trapFocus(elm, event) {
   let focusableNodes = elm.querySelectorAll(FOCUSABLE_ELEMENTS_QUERY);
 
   // no focusable nodes
@@ -100,7 +103,7 @@ function trapFocus(elm, event) {
    * Filters nodes which are hidden to prevent
    * focus leak outside modal
    */
-  focusableNodes = [...focusableNodes].filter((node) => {
+  focusableNodes = [...focusableNodes].filter(node => {
     return node.offsetParent !== null;
   });
 
@@ -129,8 +132,8 @@ function trapFocus(elm, event) {
 /**
  * Wrap the target element with a div deeply.
  */
-function wrapAll(target, wrapper = document.createElement("div")) {
-  [...target.childNodes].forEach((child) => wrapper.appendChild(child));
+export function wrapAll(target, wrapper = document.createElement("div")) {
+  [...target.childNodes].forEach(child => wrapper.appendChild(child));
   target.appendChild(wrapper);
 
   return wrapper;
@@ -139,7 +142,7 @@ function wrapAll(target, wrapper = document.createElement("div")) {
 /**
  * Create an element with its class.
  */
-function createElement(classname) {
+export function createElement(classname) {
   const element = document.createElement("div");
   element.classList.add(classname);
 

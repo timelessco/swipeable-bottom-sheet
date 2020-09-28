@@ -1,0 +1,19 @@
+{
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "plugins": ["prettier"],
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "rules": {
+    "import/prefer-default-export": "off",
+    "no-console": "off",
+    "no-useless-return": "off",
+    "no-new": "off",
+    "func-names": "off",
+    "no-use-before-define": "off"
+  },
+  "globals": {
+    "$": true
+  }
+}
