@@ -137,7 +137,6 @@ export class SwipeableBottomSheet {
 
       // Improvise cloned bottom sheet content
       this.clonedBottomSheet.classList.add("disable-scrollbars");
-      this.clonedBottomSheet.classList.add("hidden");
       this.clonedBottomSheet.insertBefore(
         this.bottomSheetPeek,
         this.clonedBottomSheet.firstChild,
@@ -162,28 +161,28 @@ export class SwipeableBottomSheet {
       // Append the bottom sheet to the DOM
       document.body.appendChild(this.swipeableBottomSheet);
 
-      if (this.options.onOpen)
-        this.options.onOpen(this.bottomSheetContent, slide =>
-          this.closeBottomSheet(this.swipeableBottomSheet, slide),
-        );
+      // Scroll Top to Peek (IMPORTANT) and hide the bottomsheet
+      // This order is important
+      this.clonedBottomSheet.scrollTop = this.bottomSheetPeek.offsetTop;
+      this.clonedBottomSheet.classList.add("hidden");
 
-      if (!this.options.overlay) {
-        // Add ID to differentiate from two types of bottom sheet
-        this.swipeableBottomSheet.setAttribute(
-          "id",
-          `swipeable-bottom-sheet-no-overlay`,
-        );
+      this.closeThreshold = this.bottomSheetPeek.offsetTop * 0.5;
 
-        // Add Toggle Interactivity to the bottom sheet based on the mouse position
-        document.addEventListener(
-          "touchstart",
-          this.toggleInteractivity,
-          passiveIsSupported ? { passive: true } : false,
-        );
+      // Handle Threshold exceptions
+      if (
+        this.options.closeThreshold &&
+        this.options.closeThreshold < this.bottomSheetPeek.offsetTop
+      ) {
+        this.closeThreshold = this.options.closeThreshold;
       }
 
       // Store all the opened instances
       openedInstances = [...openedInstances, this];
+
+      if (this.options.onOpen)
+        this.options.onOpen(this.bottomSheetContent, slide =>
+          this.closeBottomSheet(this.swipeableBottomSheet, slide),
+        );
 
       if (this.options.overlay) {
         // Disable the body scroll
@@ -203,16 +202,19 @@ export class SwipeableBottomSheet {
         });
       } else {
         await enter(this.clonedBottomSheet, "slidein");
-      }
 
-      this.closeThreshold = this.bottomSheetPeek.offsetTop * 0.5;
+        // Add ID to differentiate from two types of bottom sheet
+        this.swipeableBottomSheet.setAttribute(
+          "id",
+          `swipeable-bottom-sheet-no-overlay`,
+        );
 
-      // Handle Threshold exceptions
-      if (
-        this.options.closeThreshold &&
-        this.options.closeThreshold < this.bottomSheetPeek.offsetTop
-      ) {
-        this.closeThreshold = this.options.closeThreshold;
+        // Add Toggle Interactivity to the bottom sheet based on the mouse position
+        document.addEventListener(
+          "touchstart",
+          this.toggleInteractivity,
+          passiveIsSupported ? { passive: true } : false,
+        );
       }
     } else {
       this.options.overlay = true;
