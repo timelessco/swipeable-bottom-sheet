@@ -163,15 +163,16 @@ export class SwipeableBottomSheet {
 
       // Scroll Top to Peek (IMPORTANT) and hide the bottomsheet
       // This order is important
-      this.clonedBottomSheet.scrollTop = this.bottomSheetPeek.offsetTop;
+      const peekTop = this.bottomSheetPeek.offsetTop;
       this.clonedBottomSheet.classList.add("hidden");
+      this.clonedBottomSheet.scrollTop = peekTop;
 
-      this.closeThreshold = this.bottomSheetPeek.offsetTop * 0.5;
+      this.closeThreshold = peekTop * 0.5;
 
       // Handle Threshold exceptions
       if (
         this.options.closeThreshold &&
-        this.options.closeThreshold < this.bottomSheetPeek.offsetTop
+        this.options.closeThreshold < peekTop
       ) {
         this.closeThreshold = this.options.closeThreshold;
       }
@@ -180,8 +181,8 @@ export class SwipeableBottomSheet {
       openedInstances = [...openedInstances, this];
 
       if (this.options.onOpen)
-        this.options.onOpen(this.bottomSheetContent, slide =>
-          this.closeBottomSheet(this.swipeableBottomSheet, slide),
+        this.options.onOpen(this.bottomSheetContent, (slide = true) =>
+          closeBottomSheet(this.swipeableBottomSheet, slide),
         );
 
       if (this.options.overlay) {
